@@ -69,4 +69,4 @@ Crea una prueba de concepto que demuestre estas capacidades:
 > - Un esquema técnico (diagrama de arquitectura, flujo de datos, etc.)
 
 
-ℹ️ **Duración**: 3 días a partir de la aceptación del reto.
+ℹ️ **Duración**: 2 días a partir de la aceptación del reto.
