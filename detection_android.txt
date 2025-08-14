@@ -1,0 +1,54 @@
+1.- ¿Qué métodos existen para detectar qué apps tiene instaladas un usuario y cuáles están activas en ese momento?
+
+Hasta Android 10, no se necesita permiso especial.
+
+Android 11+: necesitas QUERY_ALL_PACKAGES si quieres acceder a todas las apps
+
+Antes: ActivityManager.getRunningAppProcesses()
+
+Limitación reciente:
+
+Android 5.0+ bloquea información de procesos de otras apps.
+
+Android 10+ restringe casi completamente acceso a apps activas de terceros.
+
+Alternativas viables:
+
+Uso del Servicio de Accesibilidad (AccessibilityService)
+
+Detecta cambios de ventana (TYPE_WINDOW_STATE_CHANGED).
+
+Permite inferir qué app está en primer plano.
+
+Requiere permiso del usuario para activar el servicio.
+
+UsageStatsManager
+
+Permite ver qué app fue usada recientemente y cuánto tiempo.
+
+Necesita permiso
+
+2.-¿Cómo podrías detectar que el usuario está viendo contenido de una app de streaming?
+
+Método -------------------------Posibilidad de éxito ----------------------------demitaciones
+Accesibilidad ----------------Detecta la app en primer plano -------------------No da detalles de contenido, solo nombre de app
+MediaProjection / captura de pantalla----Sí, captura frames en pantalla ---------DRM / FLAG_SECURE bloquea captura en apps de streaming
+Análisis de tráfico de red (VPN / proxy) ------- Puedes ver IPs, dominios, tamaño de datos ------Contenido HTTPS cifrado → solo dominios, no video exacto
+Uso de UsageStatsManager ------- Detecta tiempo de uso de la app ----- No da contenido específico
+
+
+¿Puedes saber qué película o episodio está viendo el usuario sin acceder directamente a la app?
+
+Sin acceder a la app directamente:
+
+Difícil: contenido protegido por DRM está cifrado.
+
+Solo podrías inferir:
+
+Dominio/IP (ej. netflix.com, disneyplus.com)
+
+Tamaño del tráfico (video de 1080p vs 4K)
+
+Tiempo de reproducción
+
+No puedes obtener título de la película o episodio sin violar DRM o certificado de la app.

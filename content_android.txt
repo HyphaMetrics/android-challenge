@@ -1,0 +1,99 @@
+1.- Flujo propuesto
+
+Usuario abre la app de grabación de pantalla.
+
+App solicita permisos de grabación de pantalla usando MediaProjectionManager.
+
+Usuario confirma la autorización en el diálogo del sistema.
+
+App inicia un servicio en segundo plano (ForegroundService) que graba la pantalla.
+
+El usuario puede minimizar la app o cambiar de app: la grabación continúa.
+
+La app guarda la grabación en almacenamiento local o la envía a un servidor en tiempo real.
+
+Usuario puede detener la grabación desde notificación o app.
+
+La app muestra un visor de videos grabados.
+
+2.-¿Qué clases o frameworks utilizarías?
+Captura de pantalla ---- -----MediaProjectionManager, MediaProjection, VirtualDisplay
+Grabación de video -------- --MediaRecorder o ImageReader + codificación con MediaCodec
+Servicio en segundo plano ---- ForegroundService para mantener grabación activa al cambiar apps
+UI y listado --------- ------- Jetpack Compose (LazyColumn para mostrar grabaciones)
+Envío a servidor ------------- OkHttp, Retrofit, o streaming con WebSockets
+Manejo de almacenamiento ----- File, ContentResolver, Scoped Storage
+
+3.-¿Que restricciones debes considerar (DRM, permisos, bateria)?
+
+Contenido protegido por DRM (Netflix, Disney+, Spotify) no puede ser capturado legalmente con MediaProjection.
+
+En algunos dispositivos/Android versiones, la grabación de pantalla se bloquea para apps con flag FLAG_SECURE.
+
+Permisos
+
+SYSTEM_ALERT_WINDOW si quieres overlay o controles flotantes.
+
+WRITE_EXTERNAL_STORAGE / READ_EXTERNAL_STORAGE en versiones antiguas (Scoped Storage en Android 10 o superoor).
+
+Batería y rendimiento
+
+Grabación de pantalla + envío en tiempo real es intensivo.
+
+Se recomienda codificación en hardware (MediaCodec).
+
+Limitar resolucion o fps si el dispositivo es limitado.
+
+4.-¿Es posible detectar y extraer los frames de video de una app de streaming?
+
+Directamente: No, si la app usa DRM o FLAG_SECURE.
+
+Con MediaProjection:
+
+se puede capturar lo que se muestra en pantalla, pero algunas apps bloquean la captura.
+
+Para contenido sin DRM, se puede usar ImageReader para obtener frames y procesarlos.
+
+Técnicas alternativas:
+
+Leer buffers de video internos de la app → requiere root o hooking (no recomendado ni legal).
+
+5.-¿Qué métodos o técnicas usarías para acceder al contenido en pantalla o sus elementos visibles?
+
+MediaProjection + VirtualDisplay
+
+Captura la pantalla completa como frames.
+
+Se puede grabar o procesar cada frame.
+
+ImageReader / Surface
+
+Para extraer frames individuales y analizarlos (OCR, detección de elementos visibles).
+
+AccessibilityService (opcional)
+
+Para obtener información sobre elementos visibles en pantalla (texto, botones).
+
+Útil si quieres “detectar elementos” y no solo grabar video.
+
+6.-¿Cómo podrías enviar esa grabación o captura de pantalla a un servidor en tiempo real sin afectar el rendimiento del dispositivo?
+
+Codificación eficiente
+
+MediaCodec con aceleración por hardware.
+
+Codificar a H.264 o H.265 antes de enviar.
+
+Streaming
+
+Usar WebSocket o RTMP para enviar frames en chunks pequeños.
+
+Evitar escribir primero a disco → usar buffers circulares (ByteBuffer) y enviar directamente.
+
+Optimización
+
+Reducir resolución o fps si el dispositivo tiene limitaciones.
+
+Hacer envío en un hilo separado para no bloquear UI.
+
+Manejar colas de frames para compensar fluctuaciones de red.
