@@ -1,0 +1,52 @@
+1- ¿Puedes capturar tráfico de red desde el dispositivo? ¿Qué herramientas o APIs usarías (por ejemplo: VPN local, tráfico TLS, análisis de paquetes)?
+
+Sí, pero con limitaciones importantes:
+
+Solo tu propia app: fácil, usando interceptores HTTP como OkHttp interceptor.
+
+Todo el dispositivo: requiere:
+
+VPN local (VpnService) → tu app actúa como “proxy” y recibe todo el tráfico IP.
+
+Proxy externo (mitmproxy, Charles, Fiddler) → configurando Wi-Fi del dispositivo.
+
+Root + tcpdump/libpcap → capturar todos los paquetes de red.
+
+Sin root ni VPN: una app normal no puede ver el tráfico de otras apps.
+
+2.- ¿Qué limitaciones existen con contenido cifrado (HTTPS/DRM)?
+
+HTTPS/TLS:
+
+Contenido cifrado → solo ves encabezados y dominios IP por defecto.
+
+Para ver contenido real, necesitas MITM con certificado propio.
+
+Muchas apps modernas usan certificate pinning, bloqueando MITM incluso si instalas un certificado.
+
+DRM / streaming protegido:
+
+No se puede descifrar contenido (Netflix, Disney+, Spotify).
+
+Solo puedes ver metadata o patrón de tráfico (volumen de datos, duración), no el contenido real.
+
+
+3.- ¿Podrías inferir qué contenido se está viendo (por ejemplo, URL de un video, nombre de archivo, dominio)?
+
+Lo que sí puedes inferir:
+
+Dominio/IP de la app de streaming (ej. netflix.com)
+
+Tamaño de los paquetes → estimar resolución y duración
+
+Tipo de tráfico (video vs audio)
+
+Tiempo de reproducción y patrones de acceso
+
+Lo que no puedes inferir:
+
+URL exacta del video o nombre del archivo
+
+Título de la película o episodio
+
+Contenido protegido por DRM
